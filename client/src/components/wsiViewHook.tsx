@@ -8,10 +8,10 @@ type Annotation = {
     geometry: {
         type: string,
         coordinates: number[][][],
-        properties: {
-            color: number[],
-            name: string
-        }
+    }
+    properties: {
+        color: number[],
+        name: string
     }
 }
 
@@ -130,8 +130,21 @@ const WsiView = () => {
 
 
                 polygons
-                    .data(annotations.features.map(f => f.geometry))
+                    .data(annotations.features.map(f => {
+                        return {
+                            type: f.geometry.type,
+                            coordinates: f.geometry.coordinates,
+                            properties: f.properties
+                        }
+                    }))
+                    .style('fill', true)
+                    .style('fillOpacity', 0.1)
+                    .style('stroke', false)
+                    .style('fillColor', (d: number[], idx: number, poly: any, polyidx: number) => {
+                        return `rgb(${poly.properties.color[0]}, ${poly.properties.color[1]}, ${poly.properties.color[2]})`
+                    })
                     .polygon(function (d: any) {
+
                         return {
                             outer: d.coordinates[0]
                         };
@@ -139,17 +152,14 @@ const WsiView = () => {
                     .position((d: number[]) => {
                         return {x: d[0], y: d[1]}
                     })
-                    .style((d: Annotation) => {
-                        return {
-                            fill: true,
-                            fillColor: `rgb(${d.geometry.properties.color.join(',')})`,
-                            stroke: true,
-                            strokeColor: 'black',
-                            strokeWidth: 1,
+                    .geoOn(geo.event.feature.mouseclick, function (evt: any) {
+                        console.log(evt.data.properties.name);
 
-                        }
-                    })
-                    .draw();
+                    });
+
+
+                    polygons.draw();
+
             }
         }
 
