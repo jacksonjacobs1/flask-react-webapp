@@ -1,0 +1,8 @@
+json size: 310MB
+7z of json: 16MB
+DB size: 130MB (includes spatial index)
+
+# of rows, 88605
+insert time (Sqlalchemy, for loop for add each, single commit at end), 1minute 15s
+
+
